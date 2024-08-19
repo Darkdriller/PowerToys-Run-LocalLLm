@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.LocalLLM", "Community.PowerToys.Run.Plugin.LocalLLM\Community.PowerToys.Run.Plugin.LocalLLM.csproj", "{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Debug|x64.ActiveCfg = Debug|x64
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Debug|x64.Build.0 = Debug|x64
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Release|x64.ActiveCfg = Release|x64
+		{4708C1B9-6AB4-4BA7-834D-68ABE3C439EB}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D773E6AB-A6AD-4965-A277-726D23AF50A6}
+	EndGlobalSection
+EndGlobal
