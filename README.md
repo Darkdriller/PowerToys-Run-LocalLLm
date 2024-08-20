@@ -63,3 +63,5 @@ llm what is the capital of india
 1. Download the latest release of the Local LLM from the releases page.
 2. Extract the zip file's contents to your PowerToys modules directory for the user (`%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`).
 3. Restart PowerToys.
+
+Shoutout to [@Avaith3600](https://github.com/Advaith3600) for inspiring me and helping me to build this plugin.
