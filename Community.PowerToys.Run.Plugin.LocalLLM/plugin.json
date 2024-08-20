@@ -6,6 +6,7 @@
 	"Author": "Darkdriller",
 	"Version": "1.0.1",
 	"Language": "csharp",
+	"Website": "https://github.com/Darkdriller/PowerToys-Run-LocalLLm",
 	"ExecuteFileName": "Community.PowerToys.Run.Plugin.LocalLLM.dll",
 	"IcoPathDark": "Images\\icon.png",
 	"IcoPathLight": "Images\\icon.png",
