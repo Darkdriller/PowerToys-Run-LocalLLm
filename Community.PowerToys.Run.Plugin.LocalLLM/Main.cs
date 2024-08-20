@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Wox.Plugin;
 using ManagedCommon;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.PowerToys.Settings.UI.Library;
-using Wox.Plugin.Logger;
 using Clipboard = System.Windows.Clipboard;
+using System.Linq;
 
 namespace Community.PowerToys.Run.Plugin.LocalLLM
 {
-    public class Main : IPlugin, IDelayedExecutionPlugin
+    public class Main : IPlugin, IDelayedExecutionPlugin, ISettingProvider, IContextMenu
     {
 
         public static string PluginID => "550A34D0CFA845449989D581149B3D9C";
@@ -24,6 +22,38 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         private static readonly HttpClient client = new HttpClient();
         private string IconPath { get; set; }
         private PluginInitContext Context { get; set; }
+
+        private string Endpoint, Model;
+
+        public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
+        {
+            new PluginAdditionalOption()
+            {
+                Key = "LLMEndpoint",
+                DisplayLabel = "LLM Endpoint",
+                DisplayDescription = "Enter the endpoint of your LLM model. Ex. http://localhost:11434/api/generate",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = "http://localhost:11434/api/generate",
+
+            },
+            new PluginAdditionalOption()
+            {
+                Key = "Model",
+                DisplayLabel = "Model",
+                DisplayDescription = "Enter the Model to be used in Ollama. Ex. llama3.1(default). Make sure to pull model in ollama before using here.",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = "llama3.1",
+            }
+        };
+        public void UpdateSettings(PowerLauncherPluginSettings settings)
+        {
+            if (settings != null && settings.AdditionalOptions != null)
+            {
+                Endpoint = settings.AdditionalOptions.FirstOrDefault(x => x.Key == "LLMEndpoint")?.TextValue ?? "http://localhost:11434/api/generate";
+                Model = settings.AdditionalOptions.FirstOrDefault(x => x.Key == "Model")?.TextValue ?? "llama3.1";
+            }
+        }
+
         public void Init(PluginInitContext context)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -43,22 +73,24 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                 {
                     Title = "LLM Response",
                     SubTitle = response,
-                    IcoPath = "Images\\app.png",
+                    IcoPath = "Images\\icon.png",
                     Action = e =>
                     {
                         Context.API.ShowMsg("LLM Response", response);
                         return true;
-                    }
+                    },
+                    ContextData = new Dictionary<string, string> { { "copy", response } }
                 }
             };
         }
 
+
         public async Task<string> QueryLLMStreamAsync(string input)
         {
-            var endpointUrl = "http://localhost:11434/api/generate";
+            var endpointUrl = Endpoint;
             var requestBody = new
             {
-                model = "llama3.1", // Replace with your model
+                model = Model, // Replace with your model
                 prompt = input,
                 stream = true
             };
@@ -96,6 +128,39 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         {
             List<Result> results = [];
             return results;
+        }
+
+        public Control CreateSettingPanel()
+        {
+            throw new NotImplementedException();
+        }
+        public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
+        {
+            List<ContextMenuResult> results = [];
+
+            if (selectedResult?.ContextData is Dictionary<string, string> contextData)
+            {
+                if (contextData.ContainsKey("copy"))
+                {
+                    results.Add(
+                        new ContextMenuResult
+                        {
+                            PluginName = Name,
+                            Title = "Copy (Enter)",
+                            FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                            Glyph = "\xE8C8",
+                            AcceleratorKey = Key.Enter,
+                            Action = _ =>
+                            {
+                                Clipboard.SetText(contextData["copy"].ToString());
+                                return true;
+                            }
+                        }
+                    );
+                }
+            }
+            return results;
+
         }
     }
 }

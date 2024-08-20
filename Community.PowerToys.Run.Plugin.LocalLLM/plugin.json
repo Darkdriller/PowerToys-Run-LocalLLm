@@ -4,7 +4,7 @@
 	"IsGlobal": false,
 	"Name": "LocalLLM",
 	"Author": "Darkdriller",
-	"Version": "1.0.0",
+	"Version": "1.0.1",
 	"Language": "csharp",
 	"ExecuteFileName": "Community.PowerToys.Run.Plugin.LocalLLM.dll",
 	"IcoPathDark": "Images\\icon.png",

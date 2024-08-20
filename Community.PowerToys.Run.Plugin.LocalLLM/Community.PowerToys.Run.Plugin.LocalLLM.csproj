@@ -8,7 +8,7 @@
 	<UseWindowsForms>true</UseWindowsForms>
 	<RootNamespace>Community.PowerToys.Run.Plugin.LocalLLm</RootNamespace>
 	<AssemblyName>Community.PowerToys.Run.Plugin.LocalLLM</AssemblyName>
-	<Version>1.0.0</Version>
+	<Version>1.0.1</Version>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
@@ -21,15 +21,6 @@
     <Reference Include="..\lib\x64\Wox.Infrastructure.dll" />
     <Reference Include="..\lib\x64\Wox.Plugin.dll" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(Platform)' == 'ARM64'">
-    <Reference Include="..\lib\ARM64\PowerToys.Common.UI.dll" />
-    <Reference Include="..\lib\ARM64\PowerToys.ManagedCommon.dll" />
-    <Reference Include="..\lib\ARM64\PowerToys.Settings.UI.Lib.dll" />
-    <Reference Include="..\lib\ARM64\Wox.Infrastructure.dll" />
-    <Reference Include="..\lib\ARM64\Wox.Plugin.dll" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="plugin.json">
       <CopyToOutputDirectory> PreserveNewest </CopyToOutputDirectory>
