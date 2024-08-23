@@ -8,7 +8,7 @@
 	<UseWindowsForms>true</UseWindowsForms>
 	<RootNamespace>Community.PowerToys.Run.Plugin.LocalLLm</RootNamespace>
 	<AssemblyName>Community.PowerToys.Run.Plugin.LocalLLM</AssemblyName>
-	<Version>1.0.1</Version>
+	<Version>1.0.2</Version>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
@@ -28,9 +28,5 @@
     <None Include="Images\*.png">
       <CopyToOutputDirectory> PreserveNewest </CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-    <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>

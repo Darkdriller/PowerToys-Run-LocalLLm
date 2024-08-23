@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Wox.Plugin;
 using ManagedCommon;
 using System.Windows.Controls;
@@ -10,6 +9,8 @@ using System.Windows.Input;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Clipboard = System.Windows.Clipboard;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Community.PowerToys.Run.Plugin.LocalLLM
 {
@@ -98,7 +99,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
             try
             {
                 var response = await client.PostAsync(endpointUrl, new StringContent(
-                    Newtonsoft.Json.JsonConvert.SerializeObject(requestBody),
+                    JsonSerializer.Serialize(requestBody),
                     System.Text.Encoding.UTF8, "application/json"));
 
                 response.EnsureSuccessStatusCode();
@@ -111,11 +112,10 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
 
                     while ((line = await streamReader.ReadLineAsync()) != null)
                     {
-                        var json = JObject.Parse(line);
-                        var part = json["response"]?.ToString();
+                        var json = JsonSerializer.Deserialize<JsonElement>(line);
+                        var part = json.GetProperty("response").GetString();
                         finalResponse += part;
                     }
-
                     return finalResponse;
                 }
             }
@@ -124,7 +124,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                 return $"Error querying LLM: {ex.Message}";
             }
         }
-        public List<Result> Query(Query query)
+    public List<Result> Query(Query query)
         {
             List<Result> results = [];
             return results;
