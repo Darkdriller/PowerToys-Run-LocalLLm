@@ -1,5 +1,5 @@
 {
-	"ID": "AE953C974C2241878F282EA18A7769E4",
+	"ID": "550A34D0CFA845449989D581149B3D9C",
 	"ActionKeyword": "llm",
 	"IsGlobal": false,
 	"Name": "LocalLLM",
@@ -10,5 +10,5 @@
 	"ExecuteFileName": "Community.PowerToys.Run.Plugin.LocalLLM.dll",
 	"IcoPathDark": "Images\\icon.png",
 	"IcoPathLight": "Images\\icon.png",
-	"DynamicLoading": false
+	"DynamicLoading": true
 }

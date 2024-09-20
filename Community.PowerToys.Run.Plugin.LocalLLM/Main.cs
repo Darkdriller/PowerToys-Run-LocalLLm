@@ -11,12 +11,16 @@ using Clipboard = System.Windows.Clipboard;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using HtmlAgilityPack;
 
 namespace Community.PowerToys.Run.Plugin.LocalLLM
 {
     public class Main : IPlugin, IDelayedExecutionPlugin, ISettingProvider, IContextMenu
     {
-
+        private static List<string> cachedModels = new List<string>(); 
+        private static DateTime cacheTimestamp = DateTime.MinValue; 
+        private static readonly TimeSpan cacheDuration = TimeSpan.FromHours(1);
+       
         public static string PluginID => "550A34D0CFA845449989D581149B3D9C";
         public string Name => "LocalLLM";
         public string Description => "Uses Local LLM to output answer";
@@ -25,7 +29,6 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         private PluginInitContext Context { get; set; }
 
         private string Endpoint, Model;
-
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
             new PluginAdditionalOption()
@@ -66,6 +69,32 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         public List<Result> Query(Query query, bool delayedExecution)
         {
             var input = query.Search;
+            var model = Model;
+            if (input.StartsWith(">"))
+            {
+                var segments = input.Split('>');
+                if (segments.Length == 3)
+                {
+                    model = segments[1].Trim();
+                    input = segments[2].Trim();
+                }
+            }
+
+
+            if (!IsValidModelAsync(model).Result)
+            {
+                return new List<Result>
+                {
+                    new Result
+                    {
+                        Title = "Error",
+                        SubTitle = $"Model '{model}' not found in Ollama's library.",
+                        IcoPath = "Images\\icon.png",
+                        Action = _ => { return true; }
+                    }
+                };
+            }
+            Model = model;
             var response = QueryLLMStreamAsync(input).Result;
 
             return new List<Result>
@@ -77,7 +106,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                     IcoPath = "Images\\icon.png",
                     Action = e =>
                     {
-                        Context.API.ShowMsg("LLM Response", response);
+                        Context.API.ShowMsg($"LLM Response from model : {Model}", response);
                         return true;
                     },
                     ContextData = new Dictionary<string, string> { { "copy", response } }
@@ -89,6 +118,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         public async Task<string> QueryLLMStreamAsync(string input)
         {
             var endpointUrl = Endpoint;
+
             var requestBody = new
             {
                 model = Model, // Replace with your model
@@ -124,12 +154,37 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                 return $"Error querying LLM: {ex.Message}";
             }
         }
-    public List<Result> Query(Query query)
+        public List<Result> Query(Query query)
         {
             List<Result> results = [];
             return results;
         }
+        public async Task<bool> IsValidModelAsync(string model)
+        {
+            if (DateTime.Now - cacheTimestamp > cacheDuration || !cachedModels.Any())
+            {
+                if (!await UpdateModelCacheAsync())
+                {
+                    return false;
+                }
+            }
 
+            return cachedModels.Contains(model);
+        }
+
+        private async Task<bool> UpdateModelCacheAsync()
+        {
+            var modelList = await OllamaModelScraper.GetOllamaModelsAsync();
+
+            if (modelList.Any())
+            {
+                cachedModels = modelList;
+                cacheTimestamp = DateTime.Now;
+                return true;
+            }
+
+            return false;
+        }
         public Control CreateSettingPanel()
         {
             throw new NotImplementedException();
@@ -162,5 +217,42 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
             return results;
 
         }
+
     }
+    public class OllamaModelScraper
+    {
+        private static readonly HttpClient client = new HttpClient();
+
+        public static async Task<List<string>> GetOllamaModelsAsync()
+        {
+            var url = "https://ollama.com/library";
+            var modelList = new List<string>();
+
+            try
+            {
+                var response = await client.GetStringAsync(url);
+
+                var htmlDocument = new HtmlAgilityPack.HtmlDocument();
+                htmlDocument.LoadHtml(response);
+
+                var modelNodes = htmlDocument.DocumentNode.SelectNodes("//h2[@class='truncate text-lg font-medium underline-offset-2 group-hover:underline md:text-2xl']/span");
+
+                if (modelNodes != null)
+                {
+                    foreach (var node in modelNodes)
+                    {
+                        var modelName = node.InnerText.Trim();
+                        modelList.Add(modelName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}");
+            }
+
+            return modelList;
+        }
+    }
+
 }
