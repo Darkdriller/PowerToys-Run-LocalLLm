@@ -19,7 +19,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
     {
         private static List<string> cachedModels = new List<string>(); 
         private static DateTime cacheTimestamp = DateTime.MinValue; 
-        private static readonly TimeSpan cacheDuration = TimeSpan.FromHours(1);
+        private static readonly TimeSpan cacheDuration = TimeSpan.FromHours(24);
        
         public static string PluginID => "550A34D0CFA845449989D581149B3D9C";
         public string Name => "LocalLLM";
@@ -101,7 +101,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
             {
                 new Result
                 {
-                    Title = "LLM Response",
+                    Title = $"LLM Response from model : {Model}",
                     SubTitle = response,
                     IcoPath = "Images\\icon.png",
                     Action = e =>
