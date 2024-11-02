@@ -1,6 +1,8 @@
 # Local LLM
 
 PowerToys Run plugin which will enable to use LLMs on Ollama endpoints locally.
+[![Mentioned in Awesome PowerToys Run Plugins](https://awesome.re/mentioned-badge.svg)](https://github.com/hlaueriksson/awesome-powertoys-run-plugins)
+[![Mentioned in Awesome PowerToys Run Plugins](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/hlaueriksson/awesome-powertoys-run-plugins)
 
 ![Screenshot](screenshots/screenshot1.png)
 
@@ -76,5 +78,4 @@ llm what is the capital of india
 3. Restart PowerToys.
 
 Shoutout to [@Avaith3600](https://github.com/Advaith3600) for inspiring me and helping me in building this plugin.
-[![Mentioned in Awesome PowerToys Run Plugins](https://awesome.re/mentioned-badge.svg)](https://github.com/hlaueriksson/awesome-powertoys-run-plugins)
-[![Mentioned in Awesome PowerToys Run Plugins](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/hlaueriksson/awesome-powertoys-run-plugins)
+
