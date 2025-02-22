@@ -16,11 +16,7 @@ using HtmlAgilityPack;
 namespace Community.PowerToys.Run.Plugin.LocalLLM
 {
     public class Main : IPlugin, IDelayedExecutionPlugin, ISettingProvider, IContextMenu
-    {
-        private static List<string> cachedModels = new List<string>(); 
-        private static DateTime cacheTimestamp = DateTime.MinValue; 
-        private static readonly TimeSpan cacheDuration = TimeSpan.FromHours(24);
-       
+    { 
         public static string PluginID => "550A34D0CFA845449989D581149B3D9C";
         public string Name => "LocalLLM";
         public string Description => "Uses Local LLM to output answer";
@@ -159,32 +155,6 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
             List<Result> results = [];
             return results;
         }
-        public async Task<bool> IsValidModelAsync(string model)
-        {
-            if (DateTime.Now - cacheTimestamp > cacheDuration || !cachedModels.Any())
-            {
-                if (!await UpdateModelCacheAsync())
-                {
-                    return false;
-                }
-            }
-
-            return cachedModels.Contains(model);
-        }
-
-        private async Task<bool> UpdateModelCacheAsync()
-        {
-            var modelList = await OllamaModelScraper.GetOllamaModelsAsync();
-
-            if (modelList.Any())
-            {
-                cachedModels = modelList;
-                cacheTimestamp = DateTime.Now;
-                return true;
-            }
-
-            return false;
-        }
         public Control CreateSettingPanel()
         {
             throw new NotImplementedException();
@@ -217,42 +187,37 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
             return results;
 
         }
-
-    }
-    public class OllamaModelScraper
-    {
-        private static readonly HttpClient client = new HttpClient();
-
-        public static async Task<List<string>> GetOllamaModelsAsync()
+        public async Task<bool> IsValidModelAsync(string model)
         {
-            var url = "https://ollama.com/library";
-            var modelList = new List<string>();
+            var modelList = await FetchModelsFromEndpointAsync();
+            return modelList.Contains(model);
+        }
 
+        private async Task<List<string>> FetchModelsFromEndpointAsync()
+        {
             try
             {
-                var response = await client.GetStringAsync(url);
+                string apiUrl = Endpoint.Replace("/generate", "/tags");
+                var response = await client.GetStringAsync(apiUrl);
+                var jsonDocument = JsonDocument.Parse(response);
+                var models = jsonDocument.RootElement.GetProperty("models").EnumerateArray();
 
-                var htmlDocument = new HtmlAgilityPack.HtmlDocument();
-                htmlDocument.LoadHtml(response);
-
-                var modelNodes = htmlDocument.DocumentNode.SelectNodes("//h2[@class='truncate text-lg font-medium underline-offset-2 group-hover:underline md:text-2xl']/span");
-
-                if (modelNodes != null)
+                List<string> modelNames = new List<string>();
+                foreach (var model in models)
                 {
-                    foreach (var node in modelNodes)
-                    {
-                        var modelName = node.InnerText.Trim();
-                        modelList.Add(modelName);
-                    }
+                    var modelName = model.GetProperty("name").GetString().Split(':')[0];
+                    modelNames.Add(modelName);
                 }
+                return modelNames;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
+                Console.WriteLine($"Error fetching models from API: {ex.Message}");
+                return new List<string>();
             }
-
-            return modelList;
         }
+
+
     }
 
 }

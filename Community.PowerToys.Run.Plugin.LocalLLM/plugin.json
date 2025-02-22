@@ -4,7 +4,7 @@
 	"IsGlobal": false,
 	"Name": "LocalLLM",
 	"Author": "Darkdriller",
-	"Version": "1.0.2",
+	"Version": "1.0.3",
 	"Language": "csharp",
 	"Website": "https://github.com/Darkdriller/PowerToys-Run-LocalLLm",
 	"ExecuteFileName": "Community.PowerToys.Run.Plugin.LocalLLM.dll",
