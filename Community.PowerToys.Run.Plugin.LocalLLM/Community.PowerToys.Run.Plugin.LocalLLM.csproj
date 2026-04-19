@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <Platforms>x64;arm64</Platforms>
     <PlatformTarget>$(Platform)</PlatformTarget>
     <UseWPF>true</UseWPF>
@@ -14,12 +14,23 @@
   </PropertyGroup>
 
  
-  <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <Reference Include="..\lib\x64\PowerToys.Common.UI.dll" />
-    <Reference Include="..\lib\x64\PowerToys.ManagedCommon.dll" />
-    <Reference Include="..\lib\x64\PowerToys.Settings.UI.Lib.dll" />
-    <Reference Include="..\lib\x64\Wox.Infrastructure.dll" />
-    <Reference Include="..\lib\x64\Wox.Plugin.dll" />
+
+  <ItemGroup>
+    <Reference Include="PowerToys.Common.UI">
+      <HintPath>..\lib\x64\PowerToys.Common.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="PowerToys.ManagedCommon">
+      <HintPath>..\lib\x64\PowerToys.ManagedCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="PowerToys.Settings.UI.Lib">
+      <HintPath>..\lib\x64\PowerToys.Settings.UI.Lib.dll</HintPath>
+    </Reference>
+    <Reference Include="Wox.Infrastructure">
+      <HintPath>..\lib\x64\Wox.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Wox.Plugin">
+      <HintPath>..\lib\x64\Wox.Plugin.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="plugin.json">

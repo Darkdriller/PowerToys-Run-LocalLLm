@@ -24,7 +24,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         private string IconPath { get; set; }
         private PluginInitContext Context { get; set; }
 
-        private string Endpoint, Model;
+                private string Endpoint, Model, Thinking;
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => new List<PluginAdditionalOption>()
         {
             new PluginAdditionalOption()
@@ -34,7 +34,6 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                 DisplayDescription = "Enter the endpoint of your LLM model. Ex. http://localhost:11434/api/generate",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
                 TextValue = "http://localhost:11434/api/generate",
-
             },
             new PluginAdditionalOption()
             {
@@ -42,7 +41,15 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                 DisplayLabel = "Model",
                 DisplayDescription = "Enter the Model to be used in Ollama. Ex. llama3.1(default). Make sure to pull model in ollama before using here.",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = "llama3.1",
+                TextValue = "qwen3:14b",
+            },
+            new PluginAdditionalOption()
+            {
+                Key = "Thinking",
+                DisplayLabel = "Thinking / think (optional)",
+                DisplayDescription = "Controls the JSON 'think' field. Use: auto (default), true/false, or a string like 'low'. Auto defaults to false for Qwen and to 'low' for gpt-oss models.",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = "auto",
             }
         };
         public void UpdateSettings(PowerLauncherPluginSettings settings)
@@ -50,7 +57,8 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
             if (settings != null && settings.AdditionalOptions != null)
             {
                 Endpoint = settings.AdditionalOptions.FirstOrDefault(x => x.Key == "LLMEndpoint")?.TextValue ?? "http://localhost:11434/api/generate";
-                Model = settings.AdditionalOptions.FirstOrDefault(x => x.Key == "Model")?.TextValue ?? "llama3.1";
+                Model = settings.AdditionalOptions.FirstOrDefault(x => x.Key == "Model")?.TextValue ?? "qwen3:14b";
+                Thinking = settings.AdditionalOptions.FirstOrDefault(x => x.Key == "Thinking")?.TextValue ?? "auto";
             }
         }
 
@@ -111,15 +119,45 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
         }
 
 
+                private static object ResolveThinkValue(string model, string? thinkingSetting)
+        {
+            object defaultThink =
+                model != null && model.StartsWith("gpt-oss", StringComparison.OrdinalIgnoreCase) ? "low" :
+                model != null && model.StartsWith("qwen", StringComparison.OrdinalIgnoreCase) ? false :
+                false;
+
+            if (string.IsNullOrWhiteSpace(thinkingSetting) ||
+                thinkingSetting.Equals("auto", StringComparison.OrdinalIgnoreCase))
+            {
+                return defaultThink;
+            }
+
+            // If user typed "false"/"true" we send a JSON boolean, not a string
+            if (bool.TryParse(thinkingSetting.Trim(), out var boolValue))
+            {
+                return boolValue;
+            }
+
+            // Otherwise send whatever string they typed (e.g. "low")
+            return thinkingSetting.Trim();
+        }
+
         public async Task<string> QueryLLMStreamAsync(string input)
         {
             var endpointUrl = Endpoint;
+            object thinkValue = ResolveThinkValue(Model, Thinking);
 
             var requestBody = new
             {
                 model = Model, // Replace with your model
-                prompt = input,
-                stream = true
+                prompt = "Do minimal reasoning, Return only concise factual output, as concise as possible. No tone, no filler, no needlessly descriptive sentences.\n\n" + input,
+                think = thinkValue,
+                stream = true,
+                keep_alive = 5,
+                options = new {
+                    temperature = 0.1,
+                    top_p = 0.7,
+                }
             };
 
             try
@@ -205,7 +243,7 @@ namespace Community.PowerToys.Run.Plugin.LocalLLM
                 List<string> modelNames = new List<string>();
                 foreach (var model in models)
                 {
-                    var modelName = model.GetProperty("name").GetString().Split(':')[0];
+                    var modelName = model.GetProperty("name").GetString();
                     modelNames.Add(modelName);
                 }
                 return modelNames;
