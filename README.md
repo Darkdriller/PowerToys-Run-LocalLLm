@@ -1,16 +1,3 @@
-## Fork Info
-
-### This is a fork of the original that fixes 2 issues: dotnet version, and Ollama's updated syntax handling which now combines weight and model for the model's name (llama3.1:8b instead of llama3.1)
-
-### It also adds a "thinking" option in the Powertoys Run plugin settings for models that support it
-
-For example, gpt-oss supports thinking = low, medium, or high, and models like qwen3 support thinking = true or false. 
-
-So far, defaults are only set for those 2, and they default to "low" and "false" respectively if thinking option is left at "auto"
-
-&nbsp;
-
-#    
 # Local LLM
 
 PowerToys Run plugin which will enable to use LLMs on Ollama endpoints locally.
@@ -95,4 +82,5 @@ llm what is the capital of india
 3. Restart PowerToys.
 
 Shoutout to [@Avaith3600](https://github.com/Advaith3600) for inspiring me and helping me in building this plugin.
+Thanks to [evorm](https://github.com/evorm) for the thinking feature and migration upgrade.
 
