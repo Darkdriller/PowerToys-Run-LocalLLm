@@ -11,25 +11,30 @@
 	<Version>1.0.2</Version>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <PowerToysLibRoot>..\lib\$(Platform)</PowerToysLibRoot>
   </PropertyGroup>
 
- 
+  <Target Name="ValidatePowerToysDependencies" BeforeTargets="ResolveReferences">
+    <Error
+      Condition="!Exists('$(PowerToysLibRoot)')"
+      Text="PowerToys dependency folder not found for platform '$(Platform)': $(PowerToysLibRoot). Add required DLLs before building." />
+  </Target>
 
   <ItemGroup>
     <Reference Include="PowerToys.Common.UI">
-      <HintPath>..\lib\x64\PowerToys.Common.UI.dll</HintPath>
+      <HintPath>$(PowerToysLibRoot)\PowerToys.Common.UI.dll</HintPath>
     </Reference>
     <Reference Include="PowerToys.ManagedCommon">
-      <HintPath>..\lib\x64\PowerToys.ManagedCommon.dll</HintPath>
+      <HintPath>$(PowerToysLibRoot)\PowerToys.ManagedCommon.dll</HintPath>
     </Reference>
     <Reference Include="PowerToys.Settings.UI.Lib">
-      <HintPath>..\lib\x64\PowerToys.Settings.UI.Lib.dll</HintPath>
+      <HintPath>$(PowerToysLibRoot)\PowerToys.Settings.UI.Lib.dll</HintPath>
     </Reference>
     <Reference Include="Wox.Infrastructure">
-      <HintPath>..\lib\x64\Wox.Infrastructure.dll</HintPath>
+      <HintPath>$(PowerToysLibRoot)\Wox.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Wox.Plugin">
-      <HintPath>..\lib\x64\Wox.Plugin.dll</HintPath>
+      <HintPath>$(PowerToysLibRoot)\Wox.Plugin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
