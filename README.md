@@ -16,6 +16,7 @@ Ollama now provides ARM64 support in recent releases. This plugin supports both 
 
 Use this checklist when preparing an ARM64 support pull request/release:
 
+0. Install the .NET 10 SDK locally. The ARM64 PowerToys 0.100.x assemblies referenced by this plugin require it.
 1. Add ARM64 PowerToys dependency DLLs in your local build environment under `lib/arm64`.
 2. Keep x64 dependency DLLs under `lib/x64` for existing builds.
 3. Build and test both architectures:
