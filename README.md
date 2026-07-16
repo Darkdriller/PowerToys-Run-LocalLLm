@@ -10,7 +10,28 @@ PowerToys Run plugin which will enable to use LLMs on Ollama endpoints locally.
 
 ## Note
 
-Ollama doesnt not have a release for ARM64 Windows yet. So this plugin doesnot have a ARM64 Release yet. It will be added once Ollama releases a stable ARM64 version.
+Ollama now provides ARM64 support in recent releases. This plugin supports both x64 and ARM64 builds, as long as platform-matching PowerToys dependency DLLs are available under `lib/<platform>` (for example `lib/x64` and `lib/arm64`).
+
+## ARM64 Build & PR Checklist
+
+Use this checklist when preparing an ARM64 support pull request/release:
+
+0. Install the .NET 10 SDK locally. The ARM64 PowerToys 0.100.x assemblies referenced by this plugin require it.
+1. Add ARM64 PowerToys dependency DLLs in your local build environment under `lib/arm64`.
+2. Keep x64 dependency DLLs under `lib/x64` for existing builds.
+3. Build and test both architectures:
+  ```bash
+  dotnet build Community.PowerToys.Run.Plugin.LocalLLM.sln -c Release -p:Platform=x64
+  dotnet build Community.PowerToys.Run.Plugin.LocalLLM.sln -c Release -p:Platform=arm64
+  ```
+4. Package and smoke-test both plugin artifacts in PowerToys Run on matching machines (or emulated test environment):
+  - x64 package for x64 Windows
+  - ARM64 package for ARM64 Windows
+5. In the PR description, include:
+  - Ollama release/reference proving ARM64 availability
+  - Build logs for x64 and ARM64
+  - Screenshot or short validation notes for both architectures
+6. Publish separate release assets (or clearly labeled folders) for x64 and ARM64 so users install the correct package.
 
 ## Ollama (Prerequisite)
 You need to install Ollama Locally.
